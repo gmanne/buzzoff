@@ -1,0 +1,16 @@
+   events/
+   *.wav
+   *.jpg
+   *.jpeg
+   __pycache__/
+   *.pyc
+   .env
+   *.json
+   !docs/*.json
+   *.pem
+   *.key
+   id_rsa*
+   *secret*
+   *credential*
+   *token*
+   secrets.txt

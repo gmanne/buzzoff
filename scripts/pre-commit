@@ -1,0 +1,1 @@
+#!/bin/bash files=$(git diff --cached --name-only) blocked="service_account|\.pem$|\.key$|id_rsa|secret|credential|token|\.env$" matches=$(echo "$files" | grep -E "$blocked") if [ -n "$matches" ]; then echo "BLOCKED — these staged files look sensitive:" echo "$matches" echo "If this is a false alarm, run: git commit --no-verify" exit 1 fi

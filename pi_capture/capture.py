@@ -53,7 +53,7 @@ FIXED_LONGITUDE = -78.825294
 os.makedirs(EVENTS_DIR, exist_ok=True)
 
 print("=" * 50)
-print("BuzzOff Capture — initializing")
+print("BuzzOff Capture - initializing")
 print("=" * 50)
 
 # Camera
@@ -238,7 +238,11 @@ except Exception as e:
     print(f"\nError occurred: {e}")
 
 finally:
-    picam2.stop()
+    try:
+        picam2.stop()
+        picam2.close()
+    except Exception:
+        pass
     audio.terminate()
     bus.close()
     print("Camera, audio, and I2C bus closed. Goodbye!")

@@ -96,7 +96,7 @@ def stop():
     os.kill(pid, signal.SIGKILL)
     if os.path.exists(PID_FILE):
         os.remove(PID_FILE)
-    return "Did not stop cleanly within 10 seconds — force-killed it instead."
+    return "Did not stop cleanly within 10 seconds - force-killed it instead."
 
 
 @app.route("/status")

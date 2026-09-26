@@ -156,7 +156,7 @@ def save_env_reading(event_dir, event_id, timestamp):
         "timestamp": timestamp.isoformat(),
         "latitude": FIXED_LATITUDE,
         "longitude": FIXED_LONGITUDE,
-        "location_name": LOCATION_NAME,
+        "location": LOCATION_NAME,
         "temperature_c": round(data.temperature, 2),
         "humidity_pct": round(data.humidity, 2),
         "pressure_hpa": round(data.pressure, 2),

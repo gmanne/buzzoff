@@ -15,10 +15,44 @@ import os
 import json
 import uuid
 import wave
+import argparse
 
 import pyaudio
 import smbus2
 import bme280
+
+# ========== ARGUMENTS ==========
+parser = argparse.ArgumentParser()
+parser.add_argument("--location", required=True, help="Name of the deployment location, must exist in locations.json")
+args = parser.parse_args()
+SESSION_LOCATION = args.location
+
+# Load full location details (lat/long/city/state/zip/country), cached in
+# locations.json the one time this location was first added via the
+# control page. This is looked up once at startup, not per-event.
+LOCATIONS_FILE = "/home/mavericks/buzzoff/locations.json"
+with open(LOCATIONS_FILE, "r") as f:
+    all_locations = json.load(f)
+
+if SESSION_LOCATION not in all_locations:
+    print(f"Error: location '{SESSION_LOCATION}' not found in {LOCATIONS_FILE}")
+    print("Add it via the control page first, or add it manually to that file.")
+    raise SystemExit(1)
+
+location_details = all_locations[SESSION_LOCATION]
+SESSION_LATITUDE = location_details["latitude"]
+SESSION_LONGITUDE = location_details["longitude"]
+SESSION_CITY = location_details["city"]
+SESSION_STATE = location_details["state"]
+SESSION_ZIP = location_details["zip_code"]
+SESSION_COUNTRY = location_details["country"]
+
+# ========== DEVICE IDENTITY ==========
+DEVICE_CONFIG_FILE = "/home/mavericks/buzzoff/device_config.json"
+with open(DEVICE_CONFIG_FILE, "r") as f:
+    device_config = json.load(f)
+DEVICE_ID = device_config["device_id"]
+DEVICE_NAME = device_config["device_name"]
 
 # ========== CONFIGURATION ==========
 
@@ -42,11 +76,6 @@ RECORD_SECONDS = 3
 # BME280 environmental sensor
 I2C_PORT = 1
 I2C_ADDRESS = 0x77
-
-# Fixed deployment location — update this for each Pi5/location you deploy
-LOCATION_NAME = "Arjun's backyard"
-FIXED_LATITUDE = 35.8233
-FIXED_LONGITUDE = -78.825294
 
 # ========== SETUP ==========
 
@@ -153,10 +182,16 @@ def save_env_reading(event_dir, event_id, timestamp):
 
     env_data = {
         "event_id": event_id,
+        "device_id": DEVICE_ID,
+        "device_name": DEVICE_NAME,
         "timestamp": timestamp.isoformat(),
-        "latitude": FIXED_LATITUDE,
-        "longitude": FIXED_LONGITUDE,
-        "location": LOCATION_NAME,
+        "location": SESSION_LOCATION,
+        "city": SESSION_CITY,
+        "state": SESSION_STATE,
+        "zip_code": SESSION_ZIP,
+        "country": SESSION_COUNTRY,
+        "latitude": SESSION_LATITUDE,
+        "longitude": SESSION_LONGITUDE,
         "temperature_c": round(data.temperature, 2),
         "humidity_pct": round(data.humidity, 2),
         "pressure_hpa": round(data.pressure, 2),

@@ -170,6 +170,7 @@ def home():
               addOpt.value = "__add_new__";
               addOpt.textContent = "+ Add new location";
               select.appendChild(addOpt);
+              handleLocationChange();
             }});
         }}
 
